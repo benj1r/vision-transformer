@@ -23,8 +23,25 @@ class MultiHeadAttention(nn.Module):
         self.fc == nn.Linear(heads * self.D, embed_size)
 
     def scaled_dot_attention(self, q, k, m):
-        # TODO: implement scale dot product attention function
-        pass
+        # matmul
+        attn = torch.einsum('nqhd,nkhd->nhqk', [q, k])
+        
+        # scale
+        attn = (attn / self.embed_size ** (1/2))
+        
+        # mask
+        if m is not None:
+            attn = attn.masked_fill(mask==0, -1e20)
+        # softmax
+        attn = torch.softmax(scores, dim=3)
+        
+        # matmul
+        attn = torch.einsum('nhql,nlhd->nqhd',[attn, v])
+        
+        # conat
+        attn = attn.reshape(N, q_dim, self.heads * self.D)
+        return attn
+        
 
     def forward(self, v, k, q, m):
         N = queries.shape[0] # num patches
@@ -41,11 +58,5 @@ class MultiHeadAttention(nn.Module):
         q = self.q(q)
         
         # attention
-        scores = self.scaled_dot_attention(q, k, m)
-        attention = torch.softmax(scores, dim=3)
-
-        out = torch.einsum('nhql,nlhd->nqhd')
-        out = self.fc(out.reshape(N, q_dim, self.heads * self.D))
-        return out
-
-        
+        out = self.scaled_dot_attention(q, k, m)
+        return self.fc(out)
