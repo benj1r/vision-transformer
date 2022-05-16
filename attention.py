@@ -13,7 +13,7 @@ class MultiHeadAttention(nn.Module):
         self.heads = heads
         self.D = embed_size // heads
 
-        assert self.D * heads == embed_size "embed_size needs to be divisible by heads"
+        assert self.D * heads == embed_size, "embed_size needs to be divisible by heads"
 
         # values, keys, queries definitions
         self.v == nn.Linear(self.D, self.D, bias=False)
