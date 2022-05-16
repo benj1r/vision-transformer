@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 
 
-class Transformer(nn.Module):
+class VisionTransformer(nn.Module):
     def __init__(
             self,
             embed_size,
@@ -10,10 +10,8 @@ class Transformer(nn.Module):
             dropout,
             fwd_expansion,
             layers,
-            max_len,
-            pad_idx,
             device):
         super(Transformer, self).__init__()
-    
-    def forward(self, x):
+        
+    def forward(self, img):
         pass
