@@ -47,6 +47,7 @@ class VisionTransformer(nn.Module):
                 )
         self.dropout = nn.Dropout(dropout)
         
+
         self.latent = nn.Identity()
 
         self.head = nn.Sequential(
@@ -69,62 +70,4 @@ class VisionTransformer(nn.Module):
         x = x[:,0]
         x = self.latent(x)
         x = self.head(x)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        return out

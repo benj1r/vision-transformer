@@ -32,6 +32,7 @@ class EncoderBlock(nn.Module):
         out = self.dropout(self.norm(fwd + x))
         return out
 
+
 class Encoder(nn.Module):
     def __init__(
             self,
@@ -68,4 +69,3 @@ class Encoder(nn.Module):
         for layer in self.layers:
             out = layer(out, out, out, m)
         return out
-
