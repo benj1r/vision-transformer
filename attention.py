@@ -16,11 +16,11 @@ class MultiHeadAttention(nn.Module):
         assert self.D * heads == embed_size, "embed_size needs to be divisible by heads"
 
         # values, keys, queries definitions
-        self.v == nn.Linear(self.D, self.D, bias=False)
-        self.k == nn.Linear(self.D, self.D, bias=False)
-        self.q == nn.Linear(self.D, self.D, bias=False)
+        self.v = nn.Linear(self.D, self.D, bias=False)
+        self.k = nn.Linear(self.D, self.D, bias=False)
+        self.q = nn.Linear(self.D, self.D, bias=False)
 
-        self.fc == nn.Linear(heads * self.D, embed_size)
+        self.fc = nn.Linear(heads * self.D, embed_size)
 
     def scaled_dot_attention(self, q, k, m):
         # matmul

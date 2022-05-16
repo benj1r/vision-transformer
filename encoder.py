@@ -56,7 +56,8 @@ class Encoder(nn.Module):
                         self.heads,
                         self.dropout,
                         self.fwd_expansion)
-                    ] for _ in range(self.num_layers)
+                    for _ in range(self.num_layers)
+                    ]
                 )
         
         self.dropout = nn.Dropout(self.dropout)

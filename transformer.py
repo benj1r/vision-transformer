@@ -19,7 +19,7 @@ class VisionTransformer(nn.Module):
             fwd_expansion,
             layers,
             device):
-        super(Transformer, self).__init__()
+        super(VisionTransformer, self).__init__()
         
         self.embed_size = embed_size
         self.heads = heads
@@ -30,23 +30,23 @@ class VisionTransformer(nn.Module):
             
         num_patches = img_size // patch_size
         patch_size = channels * (patch_size**2)
-
+        
+        self.encoder = Encoder(
+                self.embed_size,
+                self.heads,
+                self.dropout,
+                self.fwd_expansion,
+                self.layers
+                )
         
         self.cls = nn.Parameter(torch.randn(1,1,embed_size))
-        self.position_embedding(torch.randn(1, num_patches+1, embed_size))
+        self.position_embedding = nn.Parameter(torch.randn(1, num_patches+1, embed_size))
         self.patch_embedding = nn.Sequential(
                 Rearrange('b c (h p1) (w p2) -> b (h w) (p1 p2 c)', p1=patch_size, p2=patch_size),
                 nn.Linear(patch_size, embed_size)
                 )
         self.dropout = nn.Dropout(dropout)
         
-        self.encoder = Encoder(
-                self.embed_size,
-                self.heads,
-                self.dropout,
-                self.fwd_expansion
-                )
-
         self.latent = nn.Identity()
 
         self.head = nn.Sequential(
