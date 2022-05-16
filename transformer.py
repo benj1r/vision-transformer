@@ -1,10 +1,18 @@
 import torch
 import torch.nn as nn
+from einops import repeat
+from einops.layers.torch import Rearrange
+
+from encoder import Encoder
 
 
 class VisionTransformer(nn.Module):
     def __init__(
             self,
+            img_size,
+            channels,
+            patch_size,
+            classes,
             embed_size,
             heads,
             dropout,
@@ -13,5 +21,110 @@ class VisionTransformer(nn.Module):
             device):
         super(Transformer, self).__init__()
         
+        self.embed_size = embed_size
+        self.heads = heads
+        self.dropout = dropout
+        self.fwd_expansion = fwd_expansion
+        self.layers = layers
+        self.device = device
+            
+        num_patches = img_size // patch_size
+        patch_size = channels * (patch_size**2)
+
+        
+        self.cls = nn.Parameter(torch.randn(1,1,embed_size))
+        self.position_embedding(torch.randn(1, num_patches+1, embed_size))
+        self.patch_embedding = nn.Sequential(
+                Rearrange('b c (h p1) (w p2) -> b (h w) (p1 p2 c)', p1=patch_size, p2=patch_size),
+                nn.Linear(patch_size, embed_size)
+                )
+        self.dropout = nn.Dropout(dropout)
+        
+        self.encoder = Encoder(
+                self.embed_size,
+                self.heads,
+                self.dropout,
+                self.fwd_expansion
+                )
+
+        self.latent = nn.Identity()
+
+        self.head = nn.Sequential(
+                nn.LayerNorm(embed_size),
+                nn.Linear(embed_size, classes)
+                )
+
     def forward(self, img):
-        pass
+        x = self.patch_embedding(img)
+        b, n, _ = x.shape
+
+        cls = repeat(self.cls, '1 n d -> b n d', b = b)
+        x = torch.cat((cls, x), dim=1)
+        x += self.pos_embedding[:, :(n + 1)]
+        
+        x = self.dropout(x)
+
+        x = self.encoder(x)
+        
+        x = x[:,0]
+        x = self.latent(x)
+        x = self.head(x)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
