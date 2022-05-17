@@ -32,25 +32,21 @@ class MultiHeadAttention(nn.Module):
         # mask
         if m is not None:
             attn = attn.masked_fill(mask==0, -1e20)
+        
         # softmax
-        attn = torch.softmax(scores, dim=3)
+        attn = torch.softmax(attn, dim=3)
         
-        # matmul
-        attn = torch.einsum('nhql,nlhd->nqhd',[attn, v])
-        
-        # conat
-        attn = attn.reshape(N, q_dim, self.heads * self.D)
         return attn
         
 
     def forward(self, v, k, q, m):
-        N = queries.shape[0] # num patches
-
+        N = q.shape[0]
+        
         # values, keys, queries dimensions
         v_dim, k_dim, q_dim = v.shape[1], k.shape[1], q.shape[1]
-        v = v.reshape(N, v_dim, self.heads * self.D)
-        k = k.reshape(N, k_dim, self.heads * self.D)
-        q = q.reshape(N, q_dim, self.heads * self.D)
+        v = v.reshape(N, v_dim, self.heads, self.D)
+        k = k.reshape(N, k_dim, self.heads, self.D)
+        q = q.reshape(N, q_dim, self.heads, self.D)
         
         # linear projection
         v = self.v(v)
@@ -58,5 +54,12 @@ class MultiHeadAttention(nn.Module):
         q = self.q(q)
         
         # attention
-        out = self.scaled_dot_attention(q, k, m)
+        attn = self.scaled_dot_attention(q, k, m)
+        
+        # matmul
+        attn = torch.einsum('nhql,nlhd->nqhd',[attn, v])
+        
+        # conat
+        out = attn.reshape(N, q_dim, self.heads * self.D)
+        
         return self.fc(out)
