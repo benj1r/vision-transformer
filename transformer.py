@@ -54,6 +54,8 @@ class VisionTransformer(nn.Module):
                 nn.LayerNorm(embed_size),
                 nn.Linear(embed_size, classes)
                 )
+        
+        self.softmax = nn.LogSoftmax(dim=1)
 
     def forward(self, img):
         x = self.patch_embedding(img)
@@ -71,4 +73,6 @@ class VisionTransformer(nn.Module):
         x = x[:,0]
         x = self.latent(x)
         x = self.head(x)
+        x = self.softmax(x)
+
         return x
