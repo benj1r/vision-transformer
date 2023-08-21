@@ -1,2 +1,6 @@
-#
-#### Unofficial **[PyTorch](https://pytorch.org)** implementation of **["An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale", ICLR 2021](https://arxiv.org/abs/2010.11929)**
+### Vision transformer architecture built and wrapped into a Python package.
+Reference: ["An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale", ICLR 2021](https://arxiv.org/abs/2010.11929)
+
+---
+### PyTorch Demo and Examples
+###### These demo files and example notebooks are located in `examples/`
